@@ -17,6 +17,5 @@ jobs:
           token: ${{ secrets.MAIN_REPO_PAT }}
           repository: Alarm-System-Gazpromneft/alarm-system
           event-type: submodule-backend-pushed
-          # Можно передать полезную нагрузку:
           client-payload: |
             { "submodule": "alarm-system-backend", "commit": "${{ github.sha }}" }
