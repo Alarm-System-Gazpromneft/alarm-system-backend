@@ -68,8 +68,17 @@ class Database:
         self.conn.commit()
 
     def add_uuid(self, user, uuid):
-        expiry_time = datetime.datetime.now().timestamp() + 20
+        expiry_time = datetime.datetime.now().timestamp() + 86400
         cursor = self.conn.cursor()
         cursor.execute('INSERT INTO users_uuid ("user", uuid, expiry_time) VALUES (%s, %s, to_timestamp(%s))', (user.id, str(uuid), expiry_time))
         self.conn.commit()
 
+    def check_uuid(self, uuid):
+        if uuid is None: return False
+        cursor = self.conn.cursor()
+        cursor.execute(f"SELECT * FROM users_uuid WHERE uuid = '{uuid}'")
+        a = cursor.fetchone()
+        if (a is not None) and a[4].timestamp() > datetime.datetime.now().timestamp():
+            return True
+        else:
+            return False
