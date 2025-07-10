@@ -7,7 +7,7 @@ class Alarm:
         self.description = description
         self.priority = priority
         self.contacts_list = contacts_list
-        self.executor = executor
+        self.executor = executor #ID user
         self.cancel_list = cancel_list
         self.finish_time = finish_time
         self.creation_time = creation_time
