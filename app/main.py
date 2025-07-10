@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from app.api.authorize_user_route import authorize_user_route
@@ -12,6 +13,13 @@ from app.api.get_alrm_id_route import get_alarm_id_route
 from app.api.get_userinfo_route import get_userinfo_route
 
 app = FastAPI()
+
+app.app_midleware(
+  CORSMiddleware,
+  allow_origins = ["*"],
+  allow_methods = ["*"],
+  allow_headers = ["*"]
+)
 
 @app.get("/")
 async def read_root():
