@@ -14,7 +14,7 @@ from app.api.get_userinfo_route import get_userinfo_route
 
 app = FastAPI()
 
-app.app_midleware(
+app.add_middleware(
   CORSMiddleware,
   allow_origins = ["*"],
   allow_methods = ["*"],
@@ -57,4 +57,4 @@ async def authorize_user(user: UserAuthorization):
 
 
 
-uvicorn.run(app, port=8000)
+#uvicorn.run(app, host='0.0.0.0', port=8000)
