@@ -1,5 +1,5 @@
 import datetime
-
+import json
 import psycopg2
 from app.classes.Alarm import Alarm
 from app.classes.User import User
@@ -49,6 +49,16 @@ class Database:
         else:
             return None
 
+    def get_max_id(self):
+        cursor = self.conn.cursor()
+        cursor.execute(f"SELECT * FROM alarm ORDER BY id ASC LIMIT 1")
+        return Alarm(*cursor.fetchone())
+
+    def do_executor(self, phone_number, id_alarm):
+        cursor = self.conn.cursor()
+        cursor.execute(f"UPDATE alarm SET executor='{self.get_user_by_phone(phone_number).id}' WHERE id = '{id_alarm}'")
+        self.conn.commit()
+
     def get_alarm_id(self, alarm_id):
         cursor = self.conn.cursor()
         cursor.execute("SELECT * FROM alarm WHERE id = %s", alarm_id)
@@ -82,3 +92,9 @@ class Database:
             return True
         else:
             return False
+
+    def create_alarm(self, alarm, id_alarm):
+        cursor = self.conn.cursor()
+        cursor.execute('INSERT INTO alarm (id, name, description, priority, contacts_list) VALUES (%s, %s, %s, %s, %s)',
+                       (id_alarm, alarm.name, alarm.description, alarm.priority, json.dumps(alarm.contacts_list)))
+        self.conn.commit()

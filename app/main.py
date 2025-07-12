@@ -3,7 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from app.api.authorize_user_route import authorize_user_route
+from app.api.create_alarm_route import create_alarm_route
 from app.api.register_user_route import register_user_route
+from app.schemas.Alarm_form import AlarmForm
 from app.schemas.Authorization_form import UserAuthorization
 from app.schemas.Registration_form import UserRegistration
 
@@ -55,6 +57,11 @@ async def register_user(user: UserRegistration):
 async def authorize_user(user: UserAuthorization):
     return authorize_user_route(user)
 
+#создание проблемы и начала обзвона
+@app.post("/api/create_alarm")
+async def create_alarm(alarm: AlarmForm):
+    return create_alarm_route(alarm)
 
 
-#uvicorn.run(app, host='0.0.0.0', port=8000)
+
+uvicorn.run(app, host='0.0.0.0', port=8000)
