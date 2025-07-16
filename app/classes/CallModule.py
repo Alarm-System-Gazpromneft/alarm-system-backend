@@ -11,11 +11,16 @@ class CallModule:
             "command": "call",
             "number": number
             }))
-        while json.loads(self.ws.recv())["status"] != "success":
-            self.ws.send(json.dumps({
-                "command": "call",
-                "number": number
-            }))
+        while True:
+            try:
+                while json.loads(self.ws.recv())["status"] != "success":
+                    self.ws.send(json.dumps({
+                        "command": "call",
+                        "number": number
+                    }))
+                break
+            except:
+                continue
         start_time = datetime.datetime.now().timestamp()
         while True:
             try:
@@ -55,20 +60,44 @@ class CallModule:
         spisok_number = ["0", "0", "0", "0", "0", "0"]
         k = 0
         while k < 6:
-            message = json.loads(self.ws.recv())
+            time.sleep(.1)
+            self.ws.send(json.dumps({
+                "command": "status"
+            }))
+            message_status = json.loads(self.ws.recv())
+            print(message_status)
+            if "sip_client_response" in message_status:
+                if message_status["sip_client_response"]["status"] == "waiting":
+                    self.hangup()
+                    return False
+
+            message = message_status
+
             if ("event" in message) and (message["event"] == "dtmf_received"):
                 spisok_number[k] = message["digit"]
                 k += 1
+                continue
         return true_code == ''.join(spisok_number)
 
     def work_with_problem(self):
-        message = json.loads(self.ws.recv())
-        if ("event" in message) and (message["event"] == "dtmf_received"):
-            return message["digit"] == "1"
-        #elif ("event" in message) and (message["event"] == "recognition_partial"):
-        #    return  "\u043f\u0440\u0438\u043d\u044f\u0442\u044c" in message["text"]
-        else:
-            return self.work_with_problem()
+        while True:
+            time.sleep(.1)
+            self.ws.send(json.dumps({
+                "command": "status"
+            }))
+            message_status = json.loads(self.ws.recv())
+            print(message_status)
+            if "sip_client_response" in message_status:
+                if message_status["sip_client_response"]["status"] == "waiting":
+                    self.hangup()
+                    return False
+            message = message_status
+            if ("event" in message) and (message["event"] == "dtmf_received"):
+                return message["digit"] == "1"
+            elif ("event" in message) and (message["event"] == "recognition_partial"):
+                return  "\u043f\u0440\u0438\u043d\u044f\u0442" in message["text"]
+            else:
+                return self.work_with_problem()
 
 
 
