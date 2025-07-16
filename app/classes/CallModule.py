@@ -11,7 +11,11 @@ class CallModule:
             "command": "call",
             "number": number
             }))
-        self.ws.recv()
+        while json.loads(self.ws.recv())["status"] != "success":
+            self.ws.send(json.dumps({
+                "command": "call",
+                "number": number
+            }))
         start_time = datetime.datetime.now().timestamp()
         while True:
             try:
@@ -34,6 +38,7 @@ class CallModule:
                 pass
 
     def speak(self, text):
+
         self.ws.send(json.dumps({
             "command": "speak",
             "text": text
@@ -60,8 +65,8 @@ class CallModule:
         message = json.loads(self.ws.recv())
         if ("event" in message) and (message["event"] == "dtmf_received"):
             return message["digit"] == "1"
-        elif ("event" in message) and (message["event"] == "recognition_partial"):
-            return  "\u043f\u0440\u0438\u043d\u044f\u0442\u044c" in message["text"]
+        #elif ("event" in message) and (message["event"] == "recognition_partial"):
+        #    return  "\u043f\u0440\u0438\u043d\u044f\u0442\u044c" in message["text"]
         else:
             return self.work_with_problem()
 
