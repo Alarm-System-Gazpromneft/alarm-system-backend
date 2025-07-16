@@ -19,16 +19,17 @@ class CallModule:
                 "command": "status"
                 }))
                 if json.loads(self.ws.recv())["sip_client_response"]["status"] == 'active':
-                    break
+                    self.ws.send(json.dumps({
+                        "command": "output"
+                    }))
+                    self.ws.recv()
+                    return True
+
                 time.sleep(1)
-                if datetime.datetime.now().timestamp() - start_time > 60:
+                if datetime.datetime.now().timestamp() - start_time > 30:
                     self.hangup()
                     return False
-                self.ws.send(json.dumps({
-                    "command": "output"
-                }))
-                self.ws.recv()
-                return True
+
             except:
                 pass
 
@@ -59,6 +60,10 @@ class CallModule:
         message = json.loads(self.ws.recv())
         if ("event" in message) and (message["event"] == "dtmf_received"):
             return message["digit"] == "1"
+        elif ("event" in message) and (message["event"] == "recognition_partial"):
+            return  "\u043f\u0440\u0438\u043d\u044f\u0442\u044c" in message["text"]
+        else:
+            return self.work_with_problem()
 
 
 

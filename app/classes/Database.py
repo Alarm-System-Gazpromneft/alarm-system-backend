@@ -37,7 +37,7 @@ class Database:
 
     def get_user_by_phone(self, phone_number):
         cursor = self.conn.cursor()
-        cursor.execute(f"SELECT * FROM users WHERE phone_number = '+{phone_number}'")
+        cursor.execute(f"SELECT * FROM users WHERE phone_number = '{phone_number}'")
         return User(*cursor.fetchone())
 
     def get_user_by_login(self, login):
@@ -51,7 +51,7 @@ class Database:
 
     def get_max_id(self):
         cursor = self.conn.cursor()
-        cursor.execute(f"SELECT * FROM alarm ORDER BY id ASC LIMIT 1")
+        cursor.execute(f"SELECT * FROM alarm ORDER BY id DESC LIMIT 1")
         return Alarm(*cursor.fetchone())
 
     def do_executor(self, phone_number, id_alarm):
