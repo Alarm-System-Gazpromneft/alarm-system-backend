@@ -95,7 +95,11 @@ class CallModule:
             if ("event" in message) and (message["event"] == "dtmf_received"):
                 return message["digit"] == "1"
             elif ("event" in message) and (message["event"] == "recognition_partial"):
-                return  "\u043f\u0440\u0438\u043d\u044f\u0442" in message["text"]
+                if "\u043f\u0440\u0438\u043d\u044f\u0442" in message["text"]:
+                    return  True
+                elif "\u043E\u0442\u043A\u043B\u043E\u043D\u0438" in message["text"]:
+                    return  False
+                continue
             else:
                 return self.work_with_problem()
 
